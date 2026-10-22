@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem UTS Daring - Peternakan & Bisnis Digital</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        agri: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        digital: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for nav */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-agri-500 selection:text-white">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-agri-600 to-digital-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid font-bold fa-wheat-awn"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-800 text-base sm:text-lg leading-tight">UTS DARING</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Prodi Peternakan & Bisnis Digital</p>
+                </div>
+            </div>
+
+            <!-- Header Status Info (Visible during exam) -->
+            <div id="headerExamStatus" class="hidden flex items-center gap-4">
+                <!-- Auto Save Status -->
+                <div class="hidden md:flex items-center gap-2 text-xs text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                    <span id="saveIndicatorDot" class="w-2 h-2 rounded-full bg-agri-500 animate-pulse"></span>
+                    <span id="saveIndicatorText">Tersimpan Otomatis</span>
+                </div>
+                <!-- Countdown Timer -->
+                <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 font-semibold px-3 py-1.5 rounded-lg text-sm sm:text-base">
+                    <i class="fa-regular fa-clock text-amber-600 animate-bounce"></i>
+                    <span id="timerDisplay">45:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= PAGE 1: REGISTRATION / IDENTITY ================= -->
+        <section id="pageIdentity" class="max-w-2xl mx-auto transition-all duration-300">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+                <!-- Banner -->
+                <div class="bg-gradient-to-r from-agri-700 via-agri-600 to-digital-700 p-6 sm:p-8 text-white relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-9xl">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-xs font-semibold rounded-full mb-3 uppercase tracking-wider">
+                        Ujian Tengah Semester - TA 2026/2027
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Portal Ujian Daring Interaktif</h2>
+                    <p class="text-agri-100 text-sm mt-2">Fakultas Peternakan & Kewirausahaan Digital. Isilah data diri Anda dengan benar sebelum memulai ujian.</p>
+                </div>
+
+                <!-- Form -->
+                <form id="formIdentity" class="p-6 sm:p-8 space-y-5" onsubmit="startExam(event)">
+                    <div id="formErrorAlert" class="hidden p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg text-red-700 text-sm flex items-center gap-3">
+                        <i class="fa-solid fa-circle-exclamation text-lg"></i>
+                        <span>Mohon lengkapi semua bidang formulir sebelum melanjutkan!</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Nama Lengkap Mahasiswa *</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                                <i class="fa-regular fa-user"></i>
+                            </span>
+                            <input type="text" id="studentName" required placeholder="Contoh: Budi Santoso" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-agri-500 focus:bg-white focus:outline-none transition-all text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">NIM (Nomor Induk Mahasiswa) *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                                    <i class="fa-solid fa-id-card"></i>
+                                </span>
+                                <input type="text" id="studentNIM" required placeholder="Contoh: 2026101001" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-agri-500 focus:bg-white focus:outline-none transition-all text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Kelas *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                                    <i class="fa-solid fa-users"></i>
+                                </span>
+                                <input type="text" id="studentClass" required placeholder="Contoh: A1 / Reguler" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-agri-500 focus:bg-white focus:outline-none transition-all text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Program Studi *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </span>
+                                <select id="studentProdi" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-agri-500 focus:bg-white focus:outline-none transition-all text-sm appearance-none">
+                                    <option value="" disabled selected>Pilih Prodi...</option>
+                                    <option value="S1 Peternakan">S1 Peternakan</option>
+                                    <option value="S1 Bisnis Digital">S1 Bisnis Digital</option>
+                                    <option value="D4 Teknologi Agribisnis & Peternakan">D4 Teknologi Agribisnis & Peternakan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Mata Kuliah UTS *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
+                                    <i class="fa-solid fa-book"></i>
+                                </span>
+                                <select id="studentSubject" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-agri-500 focus:bg-white focus:outline-none transition-all text-sm appearance-none">
+                                    <option value="" disabled selected>Pilih Mata Kuliah...</option>
+                                    <option value="Manajemen Smart Farming & Agribusiness Digital">Manajemen Smart Farming & Agribusiness Digital</option>
+                                    <option value="Nutrisi Ternak & Teknologi Pakan Modern">Nutrisi Ternak & Teknologi Pakan Modern</option>
+                                    <option value="E-Commerce & Digital Marketing Produk Peternakan">E-Commerce & Digital Marketing Produk Peternakan</option>
+                                    <option value="Data Analytics Dalam Agribisnis">Data Analytics Dalam Agribisnis</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rules Box -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-xs text-slate-600 space-y-2">
+                        <div class="font-semibold text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved text-agri-600"></i> Ketentuan Ujian:
+                        </div>
+                        <ul class="list-disc list-inside space-y-1 pl-1">
+                            <li>Waktu pengerjaan total adalah <strong>45 Menit</strong>.</li>
+                            <li>Terdapat 10 soal (8 Pilihan Ganda & 2 Esai).</li>
+                            <li>Sistem akan menyimpan jawaban Anda secara otomatis.</li>
+                            <li>Sistem akan otomatis mengirim (submit) saat waktu habis.</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-agri-600 to-digital-600 hover:from-agri-700 hover:to-digital-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-base">
+                        <span>Mulai Ujian Sekarang</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: EXAM INTERFACE ================= -->
+        <section id="pageExam" class="hidden space-y-6">
+            
+            <!-- Top Bar Progress & Quick Stats -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span id="displaySubjectTag" class="text-xs font-semibold px-2.5 py-1 bg-agri-100 text-agri-800 rounded-md">Mata Kuliah</span>
+                    <h2 id="displayStudentHeader" class="text-sm font-bold text-slate-800 mt-1">Nama Mahasiswa (NIM)</h2>
+                </div>
+                
+                <!-- Progress bar -->
+                <div class="flex-1 max-w-md">
+                    <div class="flex justify-between text-xs text-slate-500 font-medium mb-1">
+                        <span>Progres Pengerjaan</span>
+                        <span id="progressText">0 dari 10 Soal (0%)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-agri-500 to-digital-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Main Layout (Left: Question Panel, Right: Question Grid Nav) -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+                <!-- Left Column: Current Question Card -->
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 sm:p-8 flex flex-col justify-between min-h-[420px]">
+                        <div>
+                            <!-- Question Header -->
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-slate-900 text-white font-bold text-sm px-3 py-1 rounded-lg" id="questionNumberBadge">Soal #1</span>
+                                    <span id="questionTopicTag" class="text-xs font-medium px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full border border-slate-200">Kategori Topik</span>
+                                </div>
+                                <!-- Doubt Checkbox -->
+                                <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs sm:text-sm font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 px-3 py-1.5 rounded-lg border border-amber-200 transition-colors">
+                                    <input type="checkbox" id="doubtCheckbox" onchange="toggleDoubt()" class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
+                                    <span><i class="fa-regular fa-flag"></i> Tandai Ragu-ragu</span>
+                                </label>
+                            </div>
+
+                            <!-- Question Text -->
+                            <div id="questionContent" class="text-slate-800 text-base sm:text-lg leading-relaxed font-medium mb-6">
+                                <!-- Dynamic Question Loaded Here -->
+                            </div>
+
+                            <!-- Answer Options Container -->
+                            <div id="answerContainer" class="space-y-3">
+                                <!-- Options rendered via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Footer Navigation inside Question Box -->
+                        <div class="flex items-center justify-between border-t border-slate-100 pt-6 mt-8">
+                            <button id="btnPrev" onclick="navigateQuestion(-1)" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-medium text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                                <span>Sebelumnya</span>
+                            </button>
+
+                            <button id="btnNext" onclick="navigateQuestion(1)" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-sm flex items-center gap-2 shadow-sm transition-all">
+                                <span>Selanjutnya</span>
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Navigation Palette & Finish Action -->
+                <div class="space-y-4">
+                    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between">
+                            <span>Navigasi Soal</span>
+                            <span class="text-xs font-normal text-slate-500">10 Soal</span>
+                        </h3>
+                        
+                        <!-- Grid of 10 Questions -->
+                        <div class="grid grid-cols-5 gap-2" id="questionNavGrid">
+                            <!-- Rendered JS -->
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="mt-6 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-agri-600 border border-agri-600"></span>
+                                <span>Sudah Dijawab</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-amber-400 border border-amber-500"></span>
+                                <span>Ragu-ragu</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-slate-100 border border-slate-300"></span>
+                                <span>Belum Dijawab</span>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button onclick="openConfirmModal()" class="w-full mt-6 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Selesaikan Ujian</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: RESULT & RECAP ================= -->
+        <section id="pageResult" class="hidden max-w-4xl mx-auto space-y-6">
+            
+            <!-- Certificate / Receipt Card (Printable) -->
+            <div id="printableReceipt" class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-10 relative overflow-hidden">
+                <!-- Watermark Logo -->
+                <div class="absolute -right-12 -bottom-12 opacity-5 pointer-events-none">
+                    <i class="fa-solid fa-award text-[280px] text-slate-900"></i>
+                </div>
+
+                <!-- Receipt Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 pb-6 gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-agri-100 text-agri-800 font-bold text-xs rounded-full mb-2">
+                            <i class="fa-solid fa-circle-check"></i> UJIAN BERHASIL DISUBMIT
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-900">Tanda Terima UTS Daring</h2>
+                        <p class="text-xs text-slate-500">Program Studi Peternakan & Bisnis Digital</p>
+                    </div>
+                    <div class="text-left sm:text-right">
+                        <span class="block text-xs text-slate-400 uppercase font-semibold">Kode Verifikasi</span>
+                        <span id="resReceiptCode" class="font-mono font-bold text-base text-digital-700">UTS-2026-X892</span>
+                        <span id="resTimestamp" class="block text-xs text-slate-500 mt-1">22 Okt 2026, 10:45 WIB</span>
+                    </div>
+                </div>
+
+                <!-- Identity Details Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 my-6 p-4 bg-slate-50 rounded-xl border border-slate-100 text-sm">
+                    <div>
+                        <span class="block text-xs text-slate-400">Nama Mahasiswa</span>
+                        <strong id="resName" class="text-slate-800">Nama Student</strong>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-400">NIM</span>
+                        <strong id="resNIM" class="text-slate-800">123456789</strong>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-400">Program Studi</span>
+                        <strong id="resProdi" class="text-slate-800">Prodi</strong>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-400">Mata Kuliah</span>
+                        <strong id="resSubject" class="text-slate-800">Mata Kuliah</strong>
+                    </div>
+                </div>
+
+                <!-- Score Banner (PG Only) -->
+                <div class="bg-gradient-to-r from-agri-900 to-digital-900 text-white rounded-xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1 text-center sm:text-left">
+                        <span class="text-xs text-agri-300 font-semibold uppercase tracking-wider">Hasil Pilihan Ganda (Otograder)</span>
+                        <h3 class="text-xl font-bold">Skor Pilihan Ganda (8 Soal)</h3>
+                        <p class="text-xs text-slate-300">*Soal Esai (2 Soal) akan diperiksa secara manual oleh Dosen Pengampu.</p>
+                    </div>
+                    <div class="text-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-xl border border-white/20 min-w-[140px]">
+                        <span class="block text-xs text-agri-200">Nilai PG</span>
+                        <span id="resScorePG" class="text-3xl font-black text-agri-400">80 / 100</span>
+                    </div>
+                </div>
+
+                <!-- Detailed Answer Recap & Explanation -->
+                <div class="space-y-6">
+                    <h3 class="font-bold text-slate-800 text-lg border-b border-slate-200 pb-2">
+                        Rekapitulasi Jawaban & Pembahasan
+                    </h3>
+
+                    <div id="recapQuestionsContainer" class="space-y-4">
+                        <!-- Dynamically filled with answers & explanations -->
+                    </div>
+                </div>
+
+                <!-- Actions Buttons (Hidden on Print) -->
+                <div class="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-end gap-3 no-print">
+                    <button onclick="window.print()" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 shadow-md transition-all">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Cetak / Download Bukti PDF</span>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-500 no-print">
+        <p>© 2026 Program Studi Peternakan & Bisnis Digital — Sistem Evaluasi Pembelajaran Daring</p>
+    </footer>
+
+    <!-- SUBMIT CONFIRMATION MODAL -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">Konfirmasi Pengiriman Ujian</h3>
+                <p class="text-xs text-slate-500 mt-1">Periksa kembali ringkasan jawaban Anda sebelum mengirim secara permanen.</p>
+            </div>
+
+            <!-- Summary Status List -->
+            <div class="my-5 bg-slate-50 p-4 rounded-xl space-y-2 text-xs">
+                <div class="flex justify-between py-1 border-b border-slate-200">
+                    <span class="text-slate-600">Total Soal:</span>
+                    <strong class="text-slate-800">10 Soal</strong>
+                </div>
+                <div class="flex justify-between py-1 border-b border-slate-200">
+                    <span class="text-slate-600">Sudah Dijawab:</span>
+                    <strong id="modalCountAnswered" class="text-agri-600">0 Soal</strong>
+                </div>
+                <div class="flex justify-between py-1 border-b border-slate-200">
+                    <span class="text-slate-600">Ditandai Ragu-Ragu:</span>
+                    <strong id="modalCountDoubt" class="text-amber-600">0 Soal</strong>
+                </div>
+                <div class="flex justify-between py-1">
+                    <span class="text-slate-600">Belum Dijawab:</span>
+                    <strong id="modalCountUnanswered" class="text-red-600">0 Soal</strong>
+                </div>
+            </div>
+
+            <div id="modalWarningText" class="hidden mb-4 p-3 bg-red-50 text-red-700 text-xs rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>Masih ada soal yang belum dijawab atau ragu-ragu!</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 py-2.5 px-4 border border-slate-300 rounded-xl text-slate-700 font-medium text-xs hover:bg-slate-100 transition-all">
+                    Kembali Periksa
+                </button>
+                <button onclick="submitExam()" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-agri-600 to-digital-600 hover:from-agri-700 hover:to-digital-700 text-white font-semibold rounded-xl text-xs shadow-md transition-all">
+                    Ya, Submit Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // QUESTION BANK (10 Questions: 8 Multiple Choice + 2 Essay)
+        const questionsData = [
+            {
+                id: 1,
+                type: 'mcq',
+                topic: 'Agritech & IoT Peternakan',
+                question: 'Penggunaan sensor IoT pada ternak sapi perah untuk memantau suhu tubuh, aktivitas ruminansi, dan deteksi dini estrus merupakan implementasi dari konsep...',
+                options: [
+                    'A. Traditional Animal Husbandry',
+                    'B. Precision Livestock Farming (PLF)',
+                    'C. Conventional Breeding System',
+                    'D. Manual Pasture Management'
+                ],
+                correctAnswer: 1, // B
+                explanation: 'Precision Livestock Farming (PLF) mengandalkan teknologi IoT dan sensor untuk memantau kondisi kesehatan dan perilaku ternak secara mendalam dan individu secara real-time.'
+            },
+            {
+                id: 2,
+                type: 'mcq',
+                topic: 'Digital Marketing & Agribisnis',
+                question: 'Strategi pemasaran produk susu pasteurisasi lokal melalui model D2C (Direct-to-Consumer) menggunakan media sosial dan marketplace memberikan keunggulan utama berupa...',
+                options: [
+                    'A. Memperpanjang rantai distribusi produk',
+                    'B. Memotong biaya perantara dan meningkatkan margin keuntungan',
+                    'C. Menghilangkan kebutuhan kemasan steril',
+                    'D. Menurunkan nilai tambah (value-added) produk'
+                ],
+                correctAnswer: 1, // B
+                explanation: 'Model D2C memangkas pihak ketiga/perantara sehingga produsen peternakan mendapatkan margin keuntungan lebih optimal dan hubungan langsung dengan konsumen.'
+            },
+            {
+                id: 3,
+                type: 'mcq',
+                topic: 'Nutrisi & Pakan Ternak',
+                question: 'Proses pengawetan pakan hijauan segar melalui fermentasi anaerobik menggunakan mikroorganisme asam laktat disebut...',
+                options: [
+                    'A. Peletisasi pakan',
+                    'B. Silase',
+                    'C. Haymaking',
+                    'D. Amoniasi jerami'
+                ],
+                correctAnswer: 1, // B
+                explanation: 'Silase adalah pakan berkualitas tinggi yang dihasilkan dari fermentasi terkontrol bahan pakan berkadar air tinggi dalam kondisi anaerobik.'
+            },
+            {
+                id: 4,
+                type: 'mcq',
+                topic: 'E-Commerce Produk Peternakan',
+                question: 'Tantangan utama dalam rantai pasok e-commerce untuk produk segar hasil peternakan (seperti daging ayam dingin dan telur) adalah penanganan...',
+                options: [
+                    'A. Cold Chain Logistics (Logistik Rantai Dingin)',
+                    'B. Search Engine Optimization (SEO)',
+                    'C. Payment Gateway Integration',
+                    'D. Cloud Computing Architecture'
+                ],
+                correctAnswer: 0, // A
+                explanation: 'Produk segar peternakan sangat rentan rusak, sehingga membutuhkan sistem rantai dingin (cold chain logistics) yang terjaga dari kandang/pemotongan hingga tangan konsumen.'
+            },
+            {
+                id: 5,
+                type: 'mcq',
+                topic: 'Data Analytics Peternakan',
+                question: 'Indikator FCR (Feed Conversion Ratio) yang makin **rendah** pada usaha peternakan ayam broiler menunjukkan...',
+                options: [
+                    'A. Efisiensi penggunaan pakan yang semakin buruk',
+                    'B. Tingkat pertumbuhan pakan lambat',
+                    'C. Efisiensi penggunaan pakan yang semakin baik dan ekonomis',
+                    'D. Biaya pakan membengkak'
+                ],
+                correctAnswer: 2, // C
+                explanation: 'FCR mengukur jumlah kg pakan yang dibutuhkan untuk menghasilkan 1 kg bobot ternak. Nilai FCR yang lebih rendah menunjukkan efisiensi pakan yang lebih baik.'
+            },
+            {
+                id: 6,
+                type: 'mcq',
+                topic: 'Fintech & Permodalan Agribisnis',
+                question: 'Platform digital yang mempertemukan peternak yang membutuhkan modal kerja dengan investor individu melalui skema pembiayaan bersama dinamakan...',
+                options: [
+                    'A. P2P Agricultural Lending / Crowdfunding',
+                    'B. Automated Teller Machine',
+                    'C. Business to Government (B2G)',
+                    'D. Point of Sales (POS)'
+                ],
+                correctAnswer: 0, // A
+                explanation: 'Peer-to-Peer (P2P) Lending & Crowdfunding agribisnis memungkinkan pendanaan inklusif bagi peternak skala kecil/menengah lewat platform digital.'
+            },
+            {
+                id: 7,
+                type: 'mcq',
+                topic: 'Teknologi Peternakan Presisi',
+                question: 'Penggunaan QR Code atau NFC Tag pada telinga ternak (Ear Tag Digital) bertujuan utama untuk...',
+                options: [
+                    'A. Meningkatkan estetika ternak',
+                    'B. Traceability (keterlacakan silsilah, riwayat medis, dan pakan)',
+                    'C. Menggantikan proses pemotongan ternak',
+                    'D. Mengatur suhu otomatis di kandang'
+                ],
+                correctAnswer: 1, // B
+                explanation: 'QR Code/RFID Ear Tag memberikan rekam jejak digital (traceability) terkait riwayat vaksinasi, silsilah, serta mutu pakan produk ternak.'
+            },
+            {
+                id: 8,
+                type: 'mcq',
+                topic: 'Bisnis Digital & Traceability',
+                question: 'Teknologi buku besar terdistribusi (decentralized ledger) yang menjamin keaslian data asal-usul daging halal dari rumah potong hingga supermarket adalah...',
+                options: [
+                    'A. Augmented Reality (AR)',
+                    'B. Blockchain Technology',
+                    'C. Virtual Reality (VR)',
+                    'D. Graphic Design Engine'
+                ],
+                correctAnswer: 1, // B
+                explanation: 'Blockchain menyediakan catatan transparan, immutable (tidak dapat diubah), dan terdesentralisasi untuk verifikasi rantai pasok halal daging peternakan.'
+            },
+            {
+                id: 9,
+                type: 'essay',
+                topic: 'Esai Analisis Agribisnis Digital',
+                question: 'Jelaskan bagaimana integrasi platform E-Commerce dan analisis data penjualan dapat membantu pimpinan peternakan dalam memprediksi permintaan pasokan telur pada musim liburan!',
+                explanation: 'Jawaban esai dinilai berdasar kejelasan analisis integrasi data historis penjualan e-commerce dengan prediksi stok & perencanaan pakan.'
+            },
+            {
+                id: 10,
+                type: 'essay',
+                topic: 'Esai Smart Farming & Bio-security',
+                question: 'Uraikan 3 pilar penerapan Smart Farming berbasis IoT yang dapat meningkatkan Biosecurity (pencegahan penyakit) pada kandang unggas modern!',
+                explanation: 'Jawaban esai dinilai berdasar penyebutan teknologi (misal: sanitasi otomatis, kontrol suhu/kelembaban IoT, serta pembatasan akses digital).'
+            }
+        ];
+
+        // STATE VARIABLES
+        let studentData = {};
+        let currentQuestionIdx = 0;
+        let userAnswers = Array(questionsData.length).fill(null);
+        let doubtStatus = Array(questionsData.length).fill(false);
+        let timerSeconds = 45 * 60; // 45 Minutes
+        let timerInterval = null;
+
+        // START EXAM (Form Validation & Transition)
+        function startExam(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('studentName').value.trim();
+            const nim = document.getElementById('studentNIM').value.trim();
+            const prodi = document.getElementById('studentProdi').value;
+            const studentClass = document.getElementById('studentClass').value.trim();
+            const subject = document.getElementById('studentSubject').value;
+
+            if (!name || !nim || !prodi || !studentClass || !subject) {
+                document.getElementById('formErrorAlert').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('formErrorAlert').classList.add('hidden');
+
+            // Save Student Info
+            studentData = { name, nim, prodi, studentClass, subject };
+
+            // Update UI with student details
+            document.getElementById('displayStudentHeader').innerText = `${name} (${nim}) - Kelas ${studentClass}`;
+            document.getElementById('displaySubjectTag').innerText = subject;
+
+            // Switch Views
+            document.getElementById('pageIdentity').classList.add('hidden');
+            document.getElementById('pageExam').classList.remove('hidden');
+            document.getElementById('headerExamStatus').classList.remove('hidden');
+
+            // Render Nav & Initial Question
+            renderNavGrid();
+            loadQuestion(0);
+
+            // Start Timer
+            startTimer();
+        }
+
+        // TIMER FUNCTION
+        function startTimer() {
+            const timerDisplay = document.getElementById('timerDisplay');
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+
+                let minutes = Math.floor(timerSeconds / 60);
+                let seconds = timerSeconds % 60;
+
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                timerDisplay.innerText = `${minutes}:${seconds}`;
+
+                // Warning colors on low time
+                if (timerSeconds <= 300) { // < 5 mins
+                    timerDisplay.parentElement.classList.remove('bg-amber-50', 'text-amber-800');
+                    timerDisplay.parentElement.classList.add('bg-red-100', 'text-red-700', 'animate-pulse');
+                }
+
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu ujian telah habis! Sistem akan menyimpan dan mengirimkan jawaban Anda secara otomatis.");
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        // LOAD QUESTION
+        function loadQuestion(index) {
+            currentQuestionIdx = index;
+            const q = questionsData[index];
+
+            // Update Question Badge & Topic
+            document.getElementById('questionNumberBadge').innerText = `Soal #${index + 1}`;
+            document.getElementById('questionTopicTag').innerText = q.topic;
+            document.getElementById('questionContent').innerText = q.question;
+
+            // Update Doubt Checkbox State
+            document.getElementById('doubtCheckbox').checked = doubtStatus[index];
+
+            // Render Answer Field based on MCQ or Essay
+            const container = document.getElementById('answerContainer');
+            container.innerHTML = '';
+
+            if (q.type === 'mcq') {
+                q.options.forEach((optText, optIdx) => {
+                    const isSelected = userAnswers[index] === optIdx;
+                    const optBtn = document.createElement('button');
+                    optBtn.type = 'button';
+                    optBtn.onclick = () => selectMCQOption(optIdx);
+                    optBtn.className = `w-full text-left p-4 rounded-xl border transition-all flex items-center justify-between text-sm sm:text-base ${
+                        isSelected 
+                        ? 'border-agri-600 bg-agri-50 text-agri-900 font-semibold ring-2 ring-agri-500/20' 
+                        : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100 text-slate-700'
+                    }`;
+
+                    optBtn.innerHTML = `
+                        <span>${optText}</span>
+                        <div class="w-5 h-5 rounded-full border ${isSelected ? 'border-agri-600 bg-agri-600' : 'border-slate-300'} flex items-center justify-center">
+                            ${isSelected ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}
+                        </div>
+                    `;
+                    container.appendChild(optBtn);
+                });
+            } else if (q.type === 'essay') {
+                const currentText = userAnswers[index] || '';
+                container.innerHTML = `
+                    <div class="space-y-2">
+                        <textarea id="essayInput" oninput="saveEssayAnswer(this.value)" rows="5" placeholder="Tuliskan jawaban esai Anda secara rinci di sini..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-agri-500 focus:bg-white focus:outline-none text-sm leading-relaxed">${currentText}</textarea>
+                        <p class="text-xs text-slate-400">Jawaban akan tersimpan secara otomatis saat Anda mengetik.</p>
+                    </div>
+                `;
+            }
+
+            // Update Prev/Next Buttons State
+            document.getElementById('btnPrev').disabled = (index === 0);
+            
+            const btnNext = document.getElementById('btnNext');
+            if (index === questionsData.length - 1) {
+                btnNext.innerHTML = `<span>Selesai</span> <i class="fa-solid fa-check text-xs"></i>`;
+                btnNext.onclick = openConfirmModal;
+            } else {
+                btnNext.innerHTML = `<span>Selanjutnya</span> <i class="fa-solid fa-chevron-right text-xs"></i>`;
+                btnNext.onclick = () => navigateQuestion(1);
+            }
+
+            updateProgress();
+            renderNavGrid();
+        }
+
+        // SELECT MCQ OPTION
+        function selectMCQOption(optionIdx) {
+            userAnswers[currentQuestionIdx] = optionIdx;
+            triggerAutoSaveIndicator();
+            loadQuestion(currentQuestionIdx);
+        }
+
+        // SAVE ESSAY ANSWER
+        function saveEssayAnswer(val) {
+            userAnswers[currentQuestionIdx] = val;
+            triggerAutoSaveIndicator();
+            updateProgress();
+            renderNavGrid();
+        }
+
+        // TOGGLE DOUBT
+        function toggleDoubt() {
+            const isChecked = document.getElementById('doubtCheckbox').checked;
+            doubtStatus[currentQuestionIdx] = isChecked;
+            renderNavGrid();
+        }
+
+        // NAVIGATE QUESTION
+        function navigateQuestion(direction) {
+            const newIndex = currentQuestionIdx + direction;
+            if (newIndex >= 0 && newIndex < questionsData.length) {
+                loadQuestion(newIndex);
+            }
+        }
+
+        // TRIGGER AUTOSAVE ANIMATION
+        function triggerAutoSaveIndicator() {
+            const dot = document.getElementById('saveIndicatorDot');
+            const txt = document.getElementById('saveIndicatorText');
+
+            txt.innerText = "Menyimpan...";
+            dot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
+
+            setTimeout(() => {
+                txt.innerText = "Tersimpan Otomatis";
+                dot.className = "w-2 h-2 rounded-full bg-agri-500";
+            }, 600);
+        }
+
+        // RENDER NAV GRID
+        function renderNavGrid() {
+            const grid = document.getElementById('questionNavGrid');
+            grid.innerHTML = '';
+
+            questionsData.forEach((q, idx) => {
+                const isCurrent = idx === currentQuestionIdx;
+                const isAnswered = userAnswers[idx] !== null && userAnswers[idx] !== '';
+                const isDoubt = doubtStatus[idx];
+
+                let bgClass = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200";
+
+                if (isDoubt) {
+                    bgClass = "bg-amber-400 text-amber-950 font-bold border-amber-500";
+                } else if (isAnswered) {
+                    bgClass = "bg-agri-600 text-white font-bold border-agri-600";
+                }
+
+                if (isCurrent) {
+                    bgClass += " ring-2 ring-slate-900 ring-offset-2";
+                }
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => loadQuestion(idx);
+                btn.className = `h-10 rounded-lg text-xs flex items-center justify-center border transition-all ${bgClass}`;
+                btn.innerText = idx + 1;
+
+                grid.appendChild(btn);
+            });
+        }
+
+        // UPDATE PROGRESS BAR
+        function updateProgress() {
+            let answeredCount = 0;
+            userAnswers.forEach(ans => {
+                if (ans !== null && ans !== '') answeredCount++;
+            });
+
+            const percentage = Math.round((answeredCount / questionsData.length) * 100);
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressText').innerText = `${answeredCount} dari ${questionsData.length} Soal (${percentage}%)`;
+        }
+
+        // MODAL CONFIRMATION
+        function openConfirmModal() {
+            let answered = 0;
+            let doubts = 0;
+
+            userAnswers.forEach(ans => {
+                if (ans !== null && ans !== '') answered++;
+            });
+
+            doubtStatus.forEach(d => {
+                if (d) doubts++;
+            });
+
+            const unanswered = questionsData.length - answered;
+
+            document.getElementById('modalCountAnswered').innerText = `${answered} Soal`;
+            document.getElementById('modalCountDoubt').innerText = `${doubts} Soal`;
+            document.getElementById('modalCountUnanswered').innerText = `${unanswered} Soal`;
+
+            const warningBox = document.getElementById('modalWarningText');
+            if (unanswered > 0 || doubts > 0) {
+                warningBox.classList.remove('hidden');
+            } else {
+                warningBox.classList.add('hidden');
+            }
+
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        // SUBMIT EXAM & CALCULATE RESULTS
+        function submitExam() {
+            clearInterval(timerInterval);
+            closeConfirmModal();
+
+            // Hide Exam view and Header timer
+            document.getElementById('pageExam').classList.add('hidden');
+            document.getElementById('headerExamStatus').classList.add('hidden');
+            document.getElementById('pageResult').classList.remove('hidden');
+
+            // Render Result Details
+            document.getElementById('resName').innerText = studentData.name;
+            document.getElementById('resNIM').innerText = studentData.nim;
+            document.getElementById('resProdi').innerText = studentData.prodi;
+            document.getElementById('resSubject').innerText = studentData.subject;
+
+            // Generate Timestamp & Unique Receipt Code
+            const now = new Date();
+            const timeString = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + `, ` + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+            const randomCode = 'UTS-' + Math.floor(100000 + Math.random() * 900000);
+
+            document.getElementById('resTimestamp').innerText = timeString;
+            document.getElementById('resReceiptCode').innerText = randomCode;
+
+            // Calculate Score (For 8 MCQ Questions, 12.5 pts each = 100 max)
+            let mcqCorrect = 0;
+            let mcqTotal = 0;
+
+            questionsData.forEach((q, idx) => {
+                if (q.type === 'mcq') {
+                    mcqTotal++;
+                    if (userAnswers[idx] === q.correctAnswer) {
+                        mcqCorrect++;
+                    }
+                }
+            });
+
+            const finalMcqScore = Math.round((mcqCorrect / mcqTotal) * 100);
+            document.getElementById('resScorePG').innerText = `${finalMcqScore} / 100`;
+
+            // Render Recap List
+            const recapContainer = document.getElementById('recapQuestionsContainer');
+            recapContainer.innerHTML = '';
+
+            questionsData.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+                const card = document.createElement('div');
+                card.className = "p-4 sm:p-5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3";
+
+                let statusBadge = '';
+                let answerText = '';
+
+                if (q.type === 'mcq') {
+                    const isCorrect = userAns === q.correctAnswer;
+                    statusBadge = isCorrect 
+                        ? `<span class="px-2.5 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-md flex items-center gap-1"><i class="fa-solid fa-check"></i> Benar</span>`
+                        : `<span class="px-2.5 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-md flex items-center gap-1"><i class="fa-solid fa-xmark"></i> Salah / Tidak Tepat</span>`;
+
+                    const userChoiceStr = userAns !== null ? q.options[userAns] : '<em>Tidak dijawab</em>';
+                    const correctChoiceStr = q.options[q.correctAnswer];
+
+                    answerText = `
+                        <div class="text-xs space-y-1">
+                            <div><span class="text-slate-500">Jawaban Anda:</span> <strong class="${isCorrect ? 'text-green-700' : 'text-red-600'}">${userChoiceStr}</strong></div>
+                            ${!isCorrect ? `<div><span class="text-slate-500">Kunci Jawaban:</span> <strong class="text-green-700">${correctChoiceStr}</strong></div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-md"><i class="fa-regular fa-clock"></i> Menunggu Penilaian Dosen</span>`;
+                    const essayAns = userAns ? userAns : '<em>Tidak diisi</em>';
+                    answerText = `
+                        <div class="text-xs space-y-1">
+                            <span class="text-slate-500">Jawaban Esai Anda:</span>
+                            <div class="p-3 bg-white border border-slate-200 rounded-lg text-slate-800 italic mt-1">${essayAns}</div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3 border-b border-slate-200 pb-2">
+                        <span class="font-bold text-slate-800 text-xs sm:text-sm">Soal #${idx + 1} (${q.topic})</span>
+                        ${statusBadge}
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-700 font-medium">${q.question}</p>
+                    ${answerText}
+                    <div class="bg-amber-50/80 border border-amber-200/60 p-3 rounded-lg text-xs text-amber-900 mt-2">
+                        <strong class="font-semibold block mb-0.5"><i class="fa-solid fa-lightbulb text-amber-600"></i> Pembahasan / Rubrik:</strong>
+                        <span>${q.explanation}</span>
+                    </div>
+                `;
+
+                recapContainer.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
